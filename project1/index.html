@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <title>互動式隨機影片</title>
+</head>
+<body>
+    <!-- 影片播放器 -->
+    <video id="videoPlayer" width="100%" controls autoplay>
+        <source src="videoA.mp4" type="video/mp4">
+    </video>
+
+    <!-- 背景音樂 -->
+    <audio id="bgMusic" autoplay loop>
+        <source src="background.mp3" type="audio/mp3">
+    </audio>
+
+    <script>
+        // 影片列表和播放機率 (總和需為 1)
+        const videos = [
+            { src: 'video1.mp4', probability: 0.4 }, // 50% 機率
+            { src: 'video2.mp4', probability: 0.3 }, // 30% 機率
+            { src: 'video3.mp4', probability: 0.3 }  // 20% 機率
+        ];
+
+        const player = document.getElementById('videoPlayer');
+        const bgMusic = document.getElementById('bgMusic');
+
+        // 影片A的路徑
+        const videoA = 'videoA.mp4';
+
+        // 監聽點擊事件，隨機播放 B、C、D，並停止背景音樂
+        player.addEventListener('click', () => {
+            const nextVideo = getRandomVideo();
+            if (player.src.includes(videoA)) {
+                bgMusic.pause(); // 停止背景音樂
+                bgMusic.currentTime = 0; // 重置音樂時間
+                player.src = nextVideo;
+                player.play();
+            }
+        });
+
+        // 影片播放完畢時回到影片A，並恢復背景音樂
+        player.addEventListener('ended', () => {
+            if (!player.src.includes(videoA)) {
+                player.src = videoA;
+                player.play();
+                bgMusic.play(); // 恢復背景音樂
+            }
+        });
+
+        // 根據設定的機率隨機選擇影片
+        function getRandomVideo() {
+            let random = Math.random();
+            let cumulativeProbability = 0;
+            for (const video of videos) {
+                cumulativeProbability += video.probability;
+                if (random <= cumulativeProbability) {
+                    return video.src;
+                }
+            }
+            return videos[0].src; // 預防機率計算誤差
+        }
+    </script>
+</body>
+</html>
